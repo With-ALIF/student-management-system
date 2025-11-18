@@ -14,23 +14,23 @@
 
   <body>
 
-    <div id="attendance"></div>
+    <div id="data"></div>
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     // শুধু leading slash / সরানো হয়েছে (মূল সমস্যা)
-    fetch("../src/present.html")
+    fetch("../src/data.html")
       .then(response => {
         if (!response.ok)
           throw new Error("Network error: " + response.status);
         return response.text();
       })
       .then(html => {
-        document.getElementById("attendance").innerHTML = html;
+        document.getElementById("data").innerHTML = html;
       })
       .catch(err => {
         console.error("Fetch failed:", err);
-        document.getElementById("attendance").innerHTML =
+        document.getElementById("data").innerHTML =
           "<p style='color:red'>Failed to load attendance template. Check console for details.</p>";
       });
   });
