@@ -8,15 +8,17 @@
     <link rel="stylesheet" href="assest/present.css" />
     <link rel="stylesheet" href="nav.css" />
   </head>
+
   <body>
 
-    <div id="attendance"></div
-   
-    <script>
+    <div id="attendance"></div>
 
-fetch("src/present.html")
+    <script>
+      fetch("src/present.html")
         .then(response => {
-          if (!response.ok) throw new Error("Network response was not ok: " + response.status);
+          if (!response.ok) {
+            throw new Error("Network response was not ok: " + response.status);
+          }
           return response.text();
         })
         .then(data => {
@@ -27,8 +29,9 @@ fetch("src/present.html")
           document.getElementById("attendance").innerHTML =
             "<p style='color:red'>Failed to load attendance template. Check console for details.</p>";
         });
+    </script>
 
-</script>
     <script src="lib/attendance.js"></script>
+
   </body>
 </html>
