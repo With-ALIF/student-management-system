@@ -19,7 +19,7 @@
 <script>
   document.addEventListener("DOMContentLoaded", () => {
     // শুধু leading slash / সরানো হয়েছে (মূল সমস্যা)
-    fetch("src/present.html")
+    fetch("../src/present.html")
       .then(response => {
         if (!response.ok)
           throw new Error("Network error: " + response.status);
