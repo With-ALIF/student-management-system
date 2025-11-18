@@ -1,20 +1,39 @@
 <!doctype html>
-<html>
+<html lang="bn">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Student Management</title>
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Font+Name&display=swap">
-    <!-- যদি folder নাম 'assest' থাকে: -->
-    <link rel="stylesheet" href="assest/present.css">
-    <link rel="stylesheet" href="nav.css">
+    <!-- উদাহরণ: assets নামক ফোল্ডার আছে ধরে নিচ্ছি -->
+    <link rel="stylesheet" href="assets/present.css" />
+    <link rel="stylesheet" href="nav.css" />
   </head>
   <body>
-    <div id="attendence"></div>
+    <h1>hi</h1>
 
-    <!-- scripts -->
-    <script src="apl/app.js"></script>
-    <script src="lib/attendence.js"></script>
+    <div id="attendance"></div>
+
+    <!-- inline script (বা আলাদা ফাইলে রাখো) -->
+    <script>
+      // Gist: একটি ছোট template fetch করে #attendance তে ঢুকবে
+      // নিশ্চিত করো present.html ঠিক পাথে আছে। উদাহরণ হিসেবে "src/present.html"
+      fetch("src/present.html")
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok: " + response.status);
+          return response.text();
+        })
+        .then(data => {
+          document.getElementById("attendance").innerHTML = data;
+        })
+        .catch(err => {
+          console.error("Fetch failed:", err);
+          document.getElementById("attendance").innerHTML =
+            "<p style='color:red'>Failed to load attendance template. Check console for details.</p>";
+        });
+    </script>
+
+    <!-- exterior scripts (পাথ ঠিক আছে কি না চেক করো) -->
+    <script src="app/app.js"></script>
+    <script src="lib/attendance.js"></script>
   </body>
 </html>
