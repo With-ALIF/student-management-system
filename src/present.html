@@ -10,31 +10,53 @@
 
 
 <div class="topbar">
-    <div class="left-action">
-    <div class="brand"> Attendence Management</div>
+<div class="left-action">
+    <div class="brand"> 
+
+Attendence Management
+
+</div>
     </div>
 </div>
 
 <div class="container">
-    <h2>Take Attendence</h2>
+    <h2 class="Take">Take Attendence</h2>
     <p class="hint">
         Type the name in the search box above and select it,
         then select <b>Present or Absent</b> and save.
-    </p>
+    </p><br>
 
     <div class="search-area" role="search">
+      
+      <legend class="search-student">
+      Search student
+    </legend>
+    
         <input id="studentSearch" class="input-search" list="studentList" type="search"
-        placeholder="Search student by name or ID....." aria-label="Search Student"/>
+        placeholder=" 🔍 Search student by name or ID....." aria-label="Search Student"/>
         <datalist id="studentsList"></datalist>
-        <input type="date" id="attendenceDate" class="input-date">
+        <div class="date-row">
+    <div class="date-label">
+        <svg class="date-icon" viewBox="0 0 24 24">
+            <path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 
+            1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 
+            16H5V9h14v11zM7 11h5v5H7z"/>
+        </svg>
+        <span>Date</span>
+    </div>
+
+    <input type="date" id="attendanceDate" class="input-date">
+</div>
         <div class="radio-group" role="radiogroup" aria-label="Presence">
             <label>
+            
                 <input type="radio" name="status" value="present" id="rdPresent" checked/>
-                Present
+                <legend class="Present">Present</legend>
             </label>
-            <label>
+<label>
+            
                 <input type="radio" name="status" value="absent" id="rdAbsent"/>
-                Absent
+                  <legend class="absent">Absent</legend>
             </label>
         </div>
         <div class="btn">
@@ -47,18 +69,20 @@
     <h3>
         Student Summary
     </h3>
-    <p class="small">Name | Total Classes | Present | Absent</p>
-    <table aria-live="polite">
-        <thead>
-            <tr>
-                <th dtyle="width:36px">#</th>
-                <th>Name</th>
-                <th>ID</th>
-                <th style="width:140px">Total Classes</th>
-                <th style="width:120px">Total Present</th>
-                <th style="width:120px">Total Absent</th>
-            </tr>
-        </thead>
-        <tbody id="tbody"></tbody>
-    </table>
+  
+    <div style="overflow-x:auto; width:100%;">
+<table aria-live="polite" style="min-width:650px;">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>ID</th>
+            <th style="width:140px">Total Classes</th>
+            <th style="width:120px">Total Present</th>
+            <th style="width:120px">Total Absent</th>
+        </tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+</table>
 </div>
+</div>
+ 
