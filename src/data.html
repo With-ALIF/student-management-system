@@ -8,7 +8,84 @@
     </ul>
 </nav>
 
-
-<h2>
-    Student Section <br> Under Construction 
+<div class="topbar">
+<div class="left-action">
+    <div class="brand"> 
+            Student Management
+</div>
+    </div>
+</div>
+<h2 class="Title">
+    Student Section
 </h2>
+ 
+<div class="row">
+    <div>
+        <label>
+            Student Name: 
+        </label>
+        <input type="text" placeholder="Type Student Name">
+    </div>
+    <div>
+        <label>Contact Number:</label>
+        <input type="number" placeholder="11 digit mobile number">
+    </div>
+    <div>
+        <label>Section</label>
+        <select id="option" name="option">
+            <option value="Sat">Sat - Mon - Wed</option>
+            <option value="Sun">Sun - Tue - Thur</option>
+            <option value="all">Six Days</option>
+            <option value="custom">Custom Days</option>
+        </select>
+    </div>
+    <div>
+        <label>Salary:</label>
+        <input type="number" id="salary" placeholder="Salary">
+    </div>
+    <div>
+        <svg class="date-icon" viewBox="0 0 24 24">
+            <path d="M19 4h-1V2h-2v2H8V2H6v2H5C3.9 4 3 4.9 3 6v14c0 
+            1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 
+            16H5V9h14v11zM7 11h5v5H7z"/>
+        </svg>
+        <span>Date</span>
+            <input type="date" id="attendanceDate" class="input-date">
+    </div>
+    <div class="controls">
+        <button class="btn btn-primary" id="addBtn">Add / Save Student</button>
+        <button class="btn" id="clearForm">Clear Form</button>
+        <div class="error" id="errorMsg"></div>
+    </div>
+
+    <hr>
+    <div class="controls">
+        <input type="text" id="searchInput" class="small" placeholder="Search by name or contact">
+        <select id="sectionFilter" class="small">
+            <option value="">
+                All Sections
+            </option>
+        </select>
+        <button class="btn" id="resetFilter">Reset Filters</button>
+        <div class="summary" id="summaryText"></div>
+    </div>
+
+    <div class="table-warped"> 
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Section</th>
+                <th>Salary</th>
+                <th>Joining Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="studentTable"></tbody>
+
+    </table>
+    </div>
+
+</div>
