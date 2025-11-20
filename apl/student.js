@@ -1,30 +1,42 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
-    fetch("../src/data.html")
-      .then(response => {
-        if (!response.ok)
-          throw new Error("Network error: " + response.status);
-        return response.text();
-      })
-      .then(html => {
-        document.getElementById("data").innerHTML = html;
-      })
-      .catch(err => {
-        console.error("Fetch failed:", err);
-        document.getElementById("data").innerHTML =
+  // --- safer fetch with clearer error messaging ---
+  fetch("../src/data.html")
+    .then(response => {
+      if (!response.ok) throw new Error("Network error: " + response.status + " " + response.statusText);
+      return response.text();
+    })
+    .then(html => {
+      const target = document.getElementById("data");
+      if (!target) {
+        console.error("Target element #data not found in DOM. Can't insert fetched HTML.");
+        return;
+      }
+      target.innerHTML = html;
+    })
+    .catch(err => {
+      console.error("Fetch failed:", err);
+      const target = document.getElementById("data");
+      if (target) {
+        target.innerHTML =
           "<p style='color:red'>Failed to load attendance template. Check console for details.</p>";
-      });
-  });
+      }
+      // Helpful hint if file:// issue suspected
+      if (location.protocol === "file:") {
+        console.warn("You're loading the page using file://. fetch() to local files can be blocked. Try running a local HTTP server (e.g., VSCode Live Server).");
+      }
+    });
+});
 
-// Student management localStorage script
+// Student management localStorage script (defensive / with null-checks)
 (function(){
   // ---------- config / selectors ----------
   const LS_KEY = 'students';
   const LS_NEXTID = 'students_nextId';
 
+  // find inputs safely
   const nameInput = document.querySelector('input[placeholder="Type Student Name"]');
   const contactInput = document.querySelector('input[placeholder="11 digit mobile number"]');
-  const sectionSelect = document.getElementById('option');
+  const sectionSelect = document.getElementById('option'); // make sure HTML has id="option"
   const salaryInput = document.getElementById('salary');
   const dateInput = document.getElementById('attendanceDate');
   const addBtn = document.getElementById('addBtn');
@@ -38,6 +50,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const studentTableBody = document.getElementById('studentTable');
 
+  // quick null-check: if any required element missing, stop and log
+  const required = [
+    ['nameInput', nameInput],
+    ['contactInput', contactInput],
+    ['sectionSelect', sectionSelect],
+    ['salaryInput', salaryInput],
+    ['dateInput', dateInput],
+    ['addBtn', addBtn],
+    ['studentTableBody', studentTableBody],
+  ];
+  const missing = required.filter(([,el]) => !el).map(([k]) => k);
+  if (missing.length) {
+    console.error("Student script aborted. Missing required elements:", missing.join(', '));
+    // optionally show visible message on page
+    const body = document.body;
+    const warn = document.createElement('div');
+    warn.style.background = '#fee';
+    warn.style.color = '#900';
+    warn.style.padding = '8px';
+    warn.textContent = 'Some required elements for student-management are missing: ' + missing.join(', ');
+    body.insertBefore(warn, body.firstChild);
+    return; // abort script so errors don't crash
+  }
+
   let students = [];
   let editingId = null; // id when editing
 
@@ -47,14 +83,20 @@ document.addEventListener("DOMContentLoaded", () => {
       const raw = localStorage.getItem(LS_KEY);
       students = raw ? JSON.parse(raw) : [];
     } catch(e){
+      console.warn("Failed parsing students from localStorage, resetting to empty.", e);
       students = [];
     }
   }
   function saveStudents(){
-    localStorage.setItem(LS_KEY, JSON.stringify(students));
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify(students));
+    } catch(e){
+      console.error("Failed to save students to localStorage:", e);
+    }
   }
   function getNextId(){
     let id = parseInt(localStorage.getItem(LS_NEXTID) || '1', 10);
+    if (isNaN(id) || id < 1) id = 1;
     localStorage.setItem(LS_NEXTID, (id + 1).toString());
     return id;
   }
@@ -149,8 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- rendering / filtering ----------
   function getFilterValues(){
-    const q = searchInput.value.trim().toLowerCase();
-    const section = sectionFilter.value;
+    const q = (searchInput && searchInput.value.trim().toLowerCase()) || '';
+    const section = (sectionFilter && sectionFilter.value) || '';
     return { q, section };
   }
 
@@ -237,7 +279,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const totalAll = students.length;
     const totalFiltered = currentList.length;
     const totalSalary = currentList.reduce((acc, s) => acc + (Number(s.salary) || 0), 0);
-    summaryText.innerHTML = `Total students: <strong>${totalAll}</strong> &nbsp;|&nbsp; Showing: <strong>${totalFiltered}</strong> &nbsp;|&nbsp; Total salary (shown): <strong>${totalSalary}</strong>`;
+    if (summaryText) {
+      summaryText.innerHTML = `Total students: <strong>${totalAll}</strong> &nbsp;|&nbsp; Showing: <strong>${totalFiltered}</strong> &nbsp;|&nbsp; Total salary (shown): <strong>${totalSalary}</strong>`;
+    }
   }
 
   // ---------- form helpers ----------
@@ -247,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     sectionSelect.value = sectionSelect.options[0]?.value || '';
     salaryInput.value = '';
     dateInput.value = todayISO();
-    errorMsg.textContent = '';
+    if (errorMsg) errorMsg.textContent = '';
     editingId = null;
     addBtn.textContent = 'Add / Save Student';
   }
@@ -265,8 +309,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // get options from sectionSelect (HTML)
     const options = Array.from(sectionSelect.options).map(o => ({val:o.value, text:o.textContent}));
     // clear current
-    const existing = Array.from(sectionFilter.options).map(o => o.value);
-    // ensure base "All Sections" remains (value "")
     sectionFilter.innerHTML = '';
     const allOpt = document.createElement('option');
     allOpt.value = '';
@@ -282,20 +324,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ---------- events ----------
   addBtn.addEventListener('click', addOrUpdateStudent);
-  clearBtn.addEventListener('click', resetForm);
+  clearBtn && clearBtn.addEventListener('click', resetForm);
 
-  searchInput.addEventListener('input', renderTable);
-  sectionFilter.addEventListener('change', renderTable);
+  searchInput && searchInput.addEventListener('input', renderTable);
+  sectionFilter && sectionFilter.addEventListener('change', renderTable);
 
-  resetFilterBtn.addEventListener('click', () => {
-    searchInput.value = '';
-    sectionFilter.value = '';
+  resetFilterBtn && resetFilterBtn.addEventListener('click', () => {
+    if (searchInput) searchInput.value = '';
+    if (sectionFilter) sectionFilter.value = '';
     renderTable();
   });
-
-  // convenience: double-click on header area clear all saved (not exposed in UI)
-  // (If you want a visible button to clear local data, you can call clearAllData())
-  // document.querySelector('.brand').addEventListener('dblclick', clearAllData);
 
   // initialize
   (function init(){
@@ -304,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // set date default
     if(!dateInput.value) dateInput.value = todayISO();
     renderTable();
+    console.info("Student-management initialized. Students loaded:", students.length);
   })();
 
   // expose clearAllData to window for debug (optional)
